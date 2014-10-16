@@ -11,7 +11,7 @@ of using strings instead of arrays its over 20x faster than regular implementati
 
 ## What is it?
 
-A topological sort is useful for determining dependency loading. It tells you which elements needs to be proceeded first
+A topological sort is useful for determining dependency loading. It tells you which elements need to be proceeded first
 in order to fulfill all dependencies in the correct order.
 
 Example usage: Unit of Work (relations), simple Package manager, Dependency Injection, ...
@@ -99,7 +99,7 @@ $result = $sorter->sort();
 
 ## Implementations
 
-tl;dr: Use `FixedArraySort` for normal topSort a nd `GroupedStringSort` for grouped topSort since its always the fastest
+tl;dr: Use `FixedArraySort` for normal topSort or `GroupedStringSort` for grouped topSort since its always the fastest
 and has a good memory footprint.
 
 ### ArraySort
