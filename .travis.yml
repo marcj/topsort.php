@@ -18,4 +18,4 @@ matrix:
     - php: hhvm
 
 after_script:
-  - vendor/bin/test-reporter
+  - ./bin/upload-coverage.sh
