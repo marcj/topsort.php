@@ -17,7 +17,7 @@ class GroupedFixedArraySort extends GroupedArraySort
     protected function injectElement($element, $minLevel)
     {
         if ($group = $this->getFirstGroup($element->type, $minLevel)) {
-            $this->addItemAt($group->position, $element);
+            $this->addItemAt($group->position + $group->length, $element);
             $group->length++;
 
             //increase all following groups +1

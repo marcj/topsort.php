@@ -41,6 +41,11 @@ interface TopSortInterface
     public function setThrowCircularDependency($enabled);
 
     /**
+     * @param callable $circularInterceptor
+     */
+    public function setCircularInterceptor(callable $circularInterceptor);
+
+    /**
      * @return boolean
      */
     public function isThrowCircularDependency();

@@ -39,6 +39,29 @@ class StringSort extends ArraySort
         return explode($this->delimiter, rtrim($this->doSort(), $this->delimiter));
     }
 
+    protected function visit($element, &$parents = null)
+    {
+        $this->throwCircularExceptionIfNeeded($element, $parents);
+
+        if (!$element->visited) {
+            $parents[$element->id] = true;
+
+            $element->visited = true;
+
+            foreach ($element->dependencies as $dependency) {
+                if (isset($this->elements[$dependency])) {
+                    $newParents = $parents;
+                    $this->visit($this->elements[$dependency], $newParents);
+                } else {
+                    throw ElementNotFoundException::create($element->id, $dependency);
+                }
+            }
+
+            $this->addToList($element);
+        }
+
+    }
+
     /**
      * Sorts dependencies and returns internal used data structure.
      *

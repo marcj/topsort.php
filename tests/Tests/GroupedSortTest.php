@@ -97,7 +97,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
         ];
         $sorter = new GroupedArraySort($elements, true);
         $this->assertTrue($sorter->isThrowCircularDependency());
-        $this->assertEquals(['brand2', 'brand1', 'car2', 'car1'], $sorter->sort());
+        $this->assertEquals(['brand1', 'brand2', 'car1', 'car2'], $sorter->sort());
     }
 
     /**
@@ -135,7 +135,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
         $sorter->add('brand2', 'brand', ['car2']);
 
         $result = $sorter->sort();
-        $expected = explode(', ', 'brand1, car2, car1, brand2');
+        $expected = explode(', ', 'brand1, car1, car2, brand2');
         $this->assertEquals($expected, $result);
     }
 
@@ -154,7 +154,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
         $result = $sorter->sort();
 
-        $expected = explode(', ', 'brand2, brand1, owner2, owner1, car1');
+        $expected = explode(', ', 'brand1, brand2, owner1, owner2, car1');
         $this->assertEquals($expected, $result);
 
         $groups = $sorter->getGroups();
@@ -189,10 +189,10 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
             (array)$groups[2]
         );
 
-        $this->assertEquals('brand2', $result[$groups[0]->position]);
-        $this->assertEquals('brand1', $result[$groups[0]->position + 1]);
-        $this->assertEquals('owner2', $result[$groups[1]->position]);
-        $this->assertEquals('owner1', $result[$groups[1]->position + 1]);
+        $this->assertEquals('brand1', $result[$groups[0]->position]);
+        $this->assertEquals('brand2', $result[$groups[0]->position + 1]);
+        $this->assertEquals('owner1', $result[$groups[1]->position]);
+        $this->assertEquals('owner2', $result[$groups[1]->position + 1]);
         $this->assertEquals('car1', $result[$groups[2]->position]);
     }
 
@@ -211,7 +211,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
         $result = $sorter->sort();
 
-        $expected = explode(', ', 'brand2, brand1, owner2, owner1, car1');
+        $expected = explode(', ', 'brand1, brand2, owner1, owner2, car1');
         $this->assertEquals($expected, $result);
     }
 
@@ -231,7 +231,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
         $result = $sorter->sort();
 
-        $expected = explode(', ', 'brand2, brand1, car2, car1, owner2, owner1');
+        $expected = explode(', ', 'brand1, brand2, car1, car2, owner1, owner2');
         $this->assertEquals($expected, $result);
     }
 
@@ -250,7 +250,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
         $result = $sorter->sort();
 
-        $expected = explode(', ', 'brand2, brand1, brand0, owner2, owner1, owner0, car2, car1, car0');
+        $expected = explode(', ', 'brand0, brand1, brand2, owner0, owner1, owner2, car0, car1, car2');
         $this->assertEquals($expected, $result);
     }
 
@@ -269,7 +269,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
         $result = $sorter->sort();
 
-        $expected = explode(', ', 'brand2, brand1, brand0, owner2, owner1, owner0, car2, car1, car0');
+        $expected = explode(', ', 'brand0, brand1, brand2, owner0, owner1, owner2, car0, car1, car2');
         $this->assertEquals($expected, $result);
     }
 
@@ -288,7 +288,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
         $result = $sorter->sort();
 
-        $expected = explode(', ', 'brand2, brand1, brand0, owner2, owner1, owner0, car2, car1, car0');
+        $expected = explode(', ', 'brand0, brand1, brand2, owner0, owner1, owner2, car0, car1, car2');
         $this->assertEquals($expected, $result);
     }
 
@@ -307,7 +307,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
         $result = $sorter->sort();
 
-        $expected = explode(', ', 'brand2, brand1, brand0, owner2, owner1, owner0, car2, car1, car0');
+        $expected = explode(', ', 'brand0, brand1, brand2, owner0, owner1, owner2, car0, car1, car2');
         $this->assertEquals($expected, $result);
     }
 }

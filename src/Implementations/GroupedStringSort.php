@@ -19,7 +19,7 @@ class GroupedStringSort extends GroupedArraySort
     {
         if ($group = $this->getFirstGroup($element->type, $minLevel)) {
             //add this element into a group
-            $this->addItemAt($group->position, $element);
+            $this->addItemAt($group, $element);
             $group->length++;
 
             //increase all following groups +1
@@ -33,17 +33,19 @@ class GroupedStringSort extends GroupedArraySort
             $element->addedAtLevel = $group->level;
         } else {
             //just append this element at the end
-            $this->groups[] = (object)[
+            $group = (object)[
                 'type' => $element->type,
                 'level' => $this->groupLevel,
                 'position' => $this->position,
-                'length' => 1
+                'length' => 1,
+                'sorted' => ''
             ];
+            $this->groups[] = $group;
             $element->addedAtLevel = $this->groupLevel;
 
             $id = $element->id . $this->delimiter;
 
-            $this->sorted .= $id;
+            $group->sorted .= $id;
             $this->position += strlen($id);
             $this->groupLevel++;
         }
@@ -53,9 +55,9 @@ class GroupedStringSort extends GroupedArraySort
      * @param integer $position
      * @param object  $element
      */
-    public function addItemAt($position, $element)
+    public function addItemAt($group, $element)
     {
-        $this->sorted = substr_replace($this->sorted, $element->id . $this->delimiter, $position, 0);
+        $group->sorted .= $element->id . $this->delimiter;
     }
 
     /**
@@ -63,7 +65,13 @@ class GroupedStringSort extends GroupedArraySort
      */
     public function sort()
     {
-        return explode($this->delimiter, rtrim($this->doSort(), $this->delimiter));
+        $list = '';
+        $this->doSort();
+        foreach ($this->groups as $group) {
+            $list .= $group->sorted;
+        }
+
+        return explode($this->delimiter, rtrim($list, $this->delimiter));
     }
 
     /**
@@ -73,9 +81,11 @@ class GroupedStringSort extends GroupedArraySort
     {
         $position = 0;
         return array_map(function($group) use (&$position) {
-            $group->position = $position;
-            $position += $group->length;
-            return $group;
+            $groupCloned = clone $group;
+            $groupCloned->position = $position;
+            unset($groupCloned->sorted);
+            $position += $groupCloned->length;
+            return $groupCloned;
         }, $this->groups);
     }
 

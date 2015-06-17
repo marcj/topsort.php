@@ -13,10 +13,23 @@ abstract class BaseImplementation
      */
     protected $throwCircularDependency = true;
 
+    /**
+     * @var callable
+     */
+    protected $circularInterceptor;
+
     public function __construct(array $elements = array(), $throwCircularDependency = true)
     {
         $this->set($elements);
         $this->throwCircularDependency = $throwCircularDependency;
+    }
+
+    /**
+     * @param callable $circularInterceptor
+     */
+    public function setCircularInterceptor(callable $circularInterceptor)
+    {
+        $this->circularInterceptor = $circularInterceptor;
     }
 
     abstract public function set(array $elements);
@@ -29,14 +42,20 @@ abstract class BaseImplementation
      */
     protected function throwCircularExceptionIfNeeded($element, $parents)
     {
+        if (!$this->isThrowCircularDependency()) {
+            return;
+        }
+
         if (isset($parents[$element->id])) {
-            if (!$this->throwCircularDependency) {
-                return;
-            }
 
             $nodes = array_keys($parents);
             $nodes[] = $element->id;
-            throw CircularDependencyException::create($nodes);
+
+            if ($this->circularInterceptor) {
+                call_user_func($this->circularInterceptor, $nodes);
+            } else {
+                throw CircularDependencyException::create($nodes);
+            }
         }
     }
 

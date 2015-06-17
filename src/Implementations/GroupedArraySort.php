@@ -99,7 +99,7 @@ class GroupedArraySort extends BaseImplementation implements GroupedTopSortInter
     protected function injectElement($element, $minLevel)
     {
         if ($group = $this->getFirstGroup($element->type, $minLevel)) {
-            $this->addItemAt($group->position, $element);
+            $this->addItemAt($group->position + $group->length, $element);
             $group->length++;
 
 //            print "   ->added into group {$group->type}, position: {$group->position}, level: {$group->level}\n";

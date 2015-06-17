@@ -70,7 +70,7 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
      *
      * @param TopSortInterface $sorter
      */
-    public function testNotCircularException(TopSortInterface $sorter)
+    public function testCircularException(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
         $sorter->add('car1', ['owner1']);
@@ -85,6 +85,26 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals('car1', $e->getStart());
             $this->assertEquals('brand1', $e->getEnd());
         }
+    }
+
+    /**
+     * @dataProvider             provideImplementations
+     *
+     * @param TopSortInterface $sorter
+     */
+    public function testCircularExceptionInterceptor(TopSortInterface $sorter)
+    {
+        $sorter->setThrowCircularDependency(true);
+        $intercepted = false;
+        $sorter->setCircularInterceptor(function() use (&$intercepted) {
+            $intercepted = true;
+        });
+        $sorter->add('car1', ['owner1']);
+        $sorter->add('owner1', ['brand1']);
+        $sorter->add('brand1', ['car1']);
+
+        $sorter->sort();
+        $this->assertTrue($intercepted, 'Interception method must be called since a circular dependency has found');
     }
 
     public function testConstructor()
