@@ -43,7 +43,7 @@ interface TopSortInterface
     /**
      * @param callable $circularInterceptor
      */
-    public function setCircularInterceptor(callable $circularInterceptor);
+    public function setCircularInterceptor($circularInterceptor);
 
     /**
      * @return boolean
