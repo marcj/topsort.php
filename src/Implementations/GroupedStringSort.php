@@ -33,13 +33,13 @@ class GroupedStringSort extends GroupedArraySort
             $element->addedAtLevel = $group->level;
         } else {
             //just append this element at the end
-            $group = (object)[
+            $group = (object)array(
                 'type' => $element->type,
                 'level' => $this->groupLevel,
                 'position' => $this->position,
                 'length' => 1,
                 'sorted' => ''
-            ];
+            );
             $this->groups[] = $group;
             $element->addedAtLevel = $this->groupLevel;
 
@@ -98,7 +98,7 @@ class GroupedStringSort extends GroupedArraySort
         $this->sorted = '';
 
         foreach ($this->elements as $element) {
-            $parents = [];
+            $parents = array();
             $this->visit($element, $parents);
         }
 

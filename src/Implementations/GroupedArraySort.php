@@ -47,7 +47,7 @@ class GroupedArraySort extends BaseImplementation implements GroupedTopSortInter
             $this->add(
                 $element,
                 $typeAndDependencies[0],
-                isset($typeAndDependencies[1]) ? $typeAndDependencies[1] : []
+                isset($typeAndDependencies[1]) ? $typeAndDependencies[1] : array()
             );
         }
     }
@@ -113,12 +113,12 @@ class GroupedArraySort extends BaseImplementation implements GroupedTopSortInter
             }
             $element->addedAtLevel = $group->level;
         } else {
-            $this->groups[] = (object)[
+            $this->groups[] = (object)array(
                 'type' => $element->type,
                 'level' => $this->groupLevel,
                 'position' => $this->position,
                 'length' => 1
-            ];
+            );
             $element->addedAtLevel = $this->groupLevel;
             $this->sorted[] = $element->id;
             $this->position++;
@@ -189,10 +189,10 @@ class GroupedArraySort extends BaseImplementation implements GroupedTopSortInter
      */
     public function doSort()
     {
-        $this->sorted = [];
+        $this->sorted = array();
 
         foreach ($this->elements as $element) {
-            $parents = [];
+            $parents = array();
             $this->visit($element, $parents);
         }
 
