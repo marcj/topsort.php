@@ -108,10 +108,10 @@ class ArraySort extends BaseImplementation implements TopSortInterface
      */
     public function doSort()
     {
-        $this->sorted = [];
+        $this->sorted = array();
 
         foreach ($this->elements as $element) {
-            $parents = [];
+            $parents = array();
             $this->visit($element, $parents);
         }
 

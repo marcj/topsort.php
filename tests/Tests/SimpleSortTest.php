@@ -14,11 +14,11 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
 
     public function provideImplementations()
     {
-        return [
-            [new ArraySort()],
-            [new StringSort()],
-            [new FixedArraySort()]
-        ];
+        return array(
+            array(new ArraySort()),
+            array(new StringSort()),
+            array(new FixedArraySort())
+        );
     }
 
     /**
@@ -30,8 +30,8 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
      */
     public function testCircular(TopSortInterface $sorter)
     {
-        $sorter->add('car1', ['owner1']);
-        $sorter->add('owner1', ['car1']);
+        $sorter->add('car1', array('owner1'));
+        $sorter->add('owner1', array('car1'));
         $sorter->sort();
     }
 
@@ -43,11 +43,11 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testDisabledCircularException(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(false);
-        $sorter->add('car1', ['owner1']);
-        $sorter->add('owner1', ['car1']);
+        $sorter->add('car1', array('owner1'));
+        $sorter->add('owner1', array('car1'));
         $result = $sorter->sort();
 
-        $this->assertEquals(['owner1', 'car1'], $result);
+        $this->assertEquals(array('owner1', 'car1'), $result);
     }
 
     /**
@@ -60,8 +60,8 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testNotFound(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
-        $sorter->add('car1', ['owner1']);
-        $sorter->add('owner1', ['car2']);
+        $sorter->add('car1', array('owner1'));
+        $sorter->add('owner1', array('car2'));
         $sorter->sort();
     }
 
@@ -73,15 +73,15 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testCircularException(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
-        $sorter->add('car1', ['owner1']);
-        $sorter->add('owner1', ['brand1']);
-        $sorter->add('brand1', ['car1']);
+        $sorter->add('car1', array('owner1'));
+        $sorter->add('owner1', array('brand1'));
+        $sorter->add('brand1', array('car1'));
 
         try {
             $sorter->sort();
             $this->fail('This must fail');
         } catch(CircularDependencyException $e) {
-            $this->assertEquals(['car1', 'owner1', 'brand1'], $e->getNodes());
+            $this->assertEquals(array('car1', 'owner1', 'brand1'), $e->getNodes());
             $this->assertEquals('car1', $e->getStart());
             $this->assertEquals('brand1', $e->getEnd());
         }
@@ -99,9 +99,9 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
         $sorter->setCircularInterceptor(function() use (&$intercepted) {
             $intercepted = true;
         });
-        $sorter->add('car1', ['owner1']);
-        $sorter->add('owner1', ['brand1']);
-        $sorter->add('brand1', ['car1']);
+        $sorter->add('car1', array('owner1'));
+        $sorter->add('owner1', array('brand1'));
+        $sorter->add('brand1', array('car1'));
 
         $sorter->sort();
         $this->assertTrue($intercepted, 'Interception method must be called since a circular dependency has found');
@@ -109,10 +109,10 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructor()
     {
-        $elements = ['car1' => ['brand1'], 'car2' => ['brand2'], 'brand1' => [], 'brand2' => []];
+        $elements = array('car1' => array('brand1'), 'car2' => array('brand2'), 'brand1' => array(), 'brand2' => array());
         $sorter = new ArraySort($elements, true);
         $this->assertTrue($sorter->isThrowCircularDependency());
-        $this->assertEquals(['brand1', 'car1', 'brand2', 'car2'], $sorter->sort());
+        $this->assertEquals(array('brand1', 'car1', 'brand2', 'car2'), $sorter->sort());
     }
 
     /**
@@ -123,8 +123,8 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testNotFoundException(TopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
-        $sorter->add('car1', ['owner1']);
-        $sorter->add('owner1', ['car2']);
+        $sorter->add('car1', array('owner1'));
+        $sorter->add('owner1', array('car2'));
 
         $this->assertEquals(true, $sorter->isThrowCircularDependency());
 
@@ -143,20 +143,20 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testImplementationsBlub(TopSortInterface $sorter)
     {
         for ($i = 0; $i < 2; $i++) {
-            $sorter->add('car' . $i, ['owner' . $i, 'brand' . $i]);
-            $sorter->add('owner' . $i, ['brand' . $i]);
+            $sorter->add('car' . $i, array('owner' . $i, 'brand' . $i));
+            $sorter->add('owner' . $i, array('brand' . $i));
             $sorter->add('brand' . $i);
         }
 
-        $sorter->add('sellerX', ['brandX3']);
-        $sorter->add('brandY', ['sellerX', 'brandX2']);
+        $sorter->add('sellerX', array('brandX3'));
+        $sorter->add('brandY', array('sellerX', 'brandX2'));
         $sorter->add('brandX');
-        $sorter->add('brandX2', ['brandX', 'brandX3']);
+        $sorter->add('brandX2', array('brandX', 'brandX3'));
         $sorter->add('brandX3');
 
         $result = $sorter->sort();
 
-        $expected = [
+        $expected = array(
             'brand0',
             'owner0',
             'car0',
@@ -168,7 +168,7 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
             'brandX',
             'brandX2',
             'brandY',
-        ];
+        );
 
         $this->assertEquals($expected, $result);
     }
@@ -178,11 +178,11 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
      */
     public function testImplementationsSimpleDoc(TopSortInterface $sorter)
     {
-        $sorter->add('car1', ['owner1', 'brand1']);
+        $sorter->add('car1', array('owner1', 'brand1'));
         $sorter->add('brand1');
         $sorter->add('brand2');
-        $sorter->add('owner1', ['brand1']);
-        $sorter->add('owner2', ['brand2']);
+        $sorter->add('owner1', array('brand1'));
+        $sorter->add('owner2', array('brand2'));
 
         $result = $sorter->sort();
 
@@ -198,9 +198,9 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     {
 
         $sorter->add('brand1');
-        $sorter->add('car1', ['brand1']);
+        $sorter->add('car1', array('brand1'));
 
-        $sorter->add('car2', ['brand2']);
+        $sorter->add('car2', array('brand2'));
         $sorter->add('brand2');
 
         $result = $sorter->sort();
@@ -216,14 +216,14 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testImplementations(TopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
-            $sorter->add('car' . $i, ['owner' . $i, 'brand' . $i]);
-            $sorter->add('owner' . $i, ['brand' . $i]);
+            $sorter->add('car' . $i, array('owner' . $i, 'brand' . $i));
+            $sorter->add('owner' . $i, array('brand' . $i));
             $sorter->add('brand' . $i);
         }
 
         $result = $sorter->sort();
 
-        $expected = [
+        $expected = array(
             'brand0',
             'owner0',
             'car0',
@@ -233,7 +233,7 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
             'brand2',
             'owner2',
             'car2'
-        ];
+        );
 
         $this->assertEquals($expected, $result);
     }
@@ -244,14 +244,14 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testImplementations2(TopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
-            $sorter->add('owner' . $i, ['brand' . $i]);
-            $sorter->add('car' . $i, ['owner' . $i, 'brand' . $i]);
+            $sorter->add('owner' . $i, array('brand' . $i));
+            $sorter->add('car' . $i, array('owner' . $i, 'brand' . $i));
             $sorter->add('brand' . $i);
         }
 
         $result = $sorter->sort();
 
-        $expected = [
+        $expected = array(
             'brand0',
             'owner0',
             'car0',
@@ -261,7 +261,7 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
             'brand2',
             'owner2',
             'car2'
-        ];
+        );
 
         $this->assertEquals($expected, $result);
     }
@@ -272,14 +272,14 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testImplementations3(TopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
-            $sorter->add('owner' . $i, ['brand' . $i]);
+            $sorter->add('owner' . $i, array('brand' . $i));
             $sorter->add('brand' . $i);
-            $sorter->add('car' . $i, ['owner' . $i, 'brand' . $i]);
+            $sorter->add('car' . $i, array('owner' . $i, 'brand' . $i));
         }
 
         $result = $sorter->sort();
 
-        $expected = [
+        $expected = array(
             'brand0',
             'owner0',
             'car0',
@@ -289,7 +289,7 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
             'brand2',
             'owner2',
             'car2'
-        ];
+        );
 
         $this->assertEquals($expected, $result);
     }
