@@ -27,7 +27,7 @@ abstract class BaseImplementation
     /**
      * @param callable $circularInterceptor
      */
-    public function setCircularInterceptor(callable $circularInterceptor)
+    public function setCircularInterceptor($circularInterceptor)
     {
         $this->circularInterceptor = $circularInterceptor;
     }

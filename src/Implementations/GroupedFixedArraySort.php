@@ -30,12 +30,12 @@ class GroupedFixedArraySort extends GroupedArraySort
 
             $element->addedAtLevel = $group->level;
         } else {
-            $this->groups[] = (object)[
+            $this->groups[] = (object)array(
                 'type' => $element->type,
                 'level' => $this->groupLevel,
                 'position' => $this->position,
                 'length' => 1
-            ];
+            );
             $element->addedAtLevel = $this->groupLevel;
             $this->sorted[$this->position] = $element->id;
             $this->position++;
@@ -78,7 +78,7 @@ class GroupedFixedArraySort extends GroupedArraySort
         $this->sorted = new \SplFixedArray(count($this->elements));
 
         foreach ($this->elements as $element) {
-            $parents = [];
+            $parents = array();
             $this->visit($element, $parents);
         }
 

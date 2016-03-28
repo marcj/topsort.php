@@ -14,11 +14,11 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
     public function provideImplementations()
     {
-        return [
-            [new GroupedArraySort()],
-            [new GroupedStringSort()],
-            [new GroupedFixedArraySort()]
-        ];
+        return array(
+            array(new GroupedArraySort()),
+            array(new GroupedStringSort()),
+            array(new GroupedFixedArraySort())
+        );
     }
 
     /**
@@ -30,8 +30,8 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
      */
     public function testCircular(GroupedTopSortInterface $sorter)
     {
-        $sorter->add('car1', 'bar', ['owner1']);
-        $sorter->add('owner1', 'owner', ['car1']);
+        $sorter->add('car1', 'bar', array('owner1'));
+        $sorter->add('owner1', 'owner', array('car1'));
         $sorter->sort();
     }
 
@@ -43,11 +43,11 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     public function testDisabledCircularException(GroupedTopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(false);
-        $sorter->add('car1', ['owner1']);
-        $sorter->add('owner1', ['car1']);
+        $sorter->add('car1', array('owner1'));
+        $sorter->add('owner1', array('car1'));
         $result = $sorter->sort();
 
-        $this->assertEquals(['car1', 'owner1'], $result);
+        $this->assertEquals(array('car1', 'owner1'), $result);
     }
 
     /**
@@ -60,8 +60,8 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     public function testNotFound(GroupedTopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
-        $sorter->add('car1', 'car', ['owner1']);
-        $sorter->add('owner1', 'owner', ['car2']);
+        $sorter->add('car1', 'car', array('owner1'));
+        $sorter->add('owner1', 'owner', array('car2'));
         $sorter->sort();
     }
 
@@ -73,15 +73,15 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     public function testNotCircularException(GroupedTopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
-        $sorter->add('car1', 'car', ['owner1']);
-        $sorter->add('owner1', 'owner', ['brand1']);
-        $sorter->add('brand1', 'brand', ['car1']);
+        $sorter->add('car1', 'car', array('owner1'));
+        $sorter->add('owner1', 'owner', array('brand1'));
+        $sorter->add('brand1', 'brand', array('car1'));
 
         try {
             $sorter->sort();
             $this->fail('This must fail');
         } catch( CircularDependencyException $e ) {
-            $this->assertEquals(['car1', 'owner1', 'brand1'], $e->getNodes());
+            $this->assertEquals(array('car1', 'owner1', 'brand1'), $e->getNodes());
             $this->assertEquals('car1', $e->getStart());
             $this->assertEquals('brand1', $e->getEnd());
         }
@@ -89,15 +89,15 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
 
     public function testConstructor()
     {
-        $elements = [
-            'car1' => ['car', ['brand1']],
-            'car2' => ['car', ['brand2']],
-            'brand1' => ['brand'],
-            'brand2' => ['brand']
-        ];
+        $elements = array(
+            'car1' => array('car', array('brand1')),
+            'car2' => array('car', array('brand2')),
+            'brand1' => array('brand'),
+            'brand2' => array('brand')
+        );
         $sorter = new GroupedArraySort($elements, true);
         $this->assertTrue($sorter->isThrowCircularDependency());
-        $this->assertEquals(['brand1', 'brand2', 'car1', 'car2'], $sorter->sort());
+        $this->assertEquals(array('brand1', 'brand2', 'car1', 'car2'), $sorter->sort());
     }
 
     /**
@@ -108,8 +108,8 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     public function testNotFoundException(GroupedTopSortInterface $sorter)
     {
         $sorter->setThrowCircularDependency(true);
-        $sorter->add('car1', 'car', ['owner1']);
-        $sorter->add('owner1', 'owner', ['car2']);
+        $sorter->add('car1', 'car', array('owner1'));
+        $sorter->add('owner1', 'owner', array('car2'));
 
         $this->assertEquals(true, $sorter->isThrowCircularDependency());
 
@@ -129,10 +129,10 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
      */
     public function testImplementationsSimple2(GroupedTopSortInterface $sorter)
     {
-        $sorter->add('car1', 'car', ['brand1']);
+        $sorter->add('car1', 'car', array('brand1'));
         $sorter->add('brand1', 'brand');
         $sorter->add('car2', 'car');
-        $sorter->add('brand2', 'brand', ['car2']);
+        $sorter->add('brand2', 'brand', array('car2'));
 
         $result = $sorter->sort();
         $expected = explode(', ', 'brand1, car1, car2, brand2');
@@ -146,11 +146,11 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
      */
     public function testImplementationsGetGroups(GroupedTopSortInterface $sorter)
     {
-        $sorter->add('car1', 'car', ['owner1', 'brand1']);
+        $sorter->add('car1', 'car', array('owner1', 'brand1'));
         $sorter->add('brand1', 'brand');
         $sorter->add('brand2', 'brand');
-        $sorter->add('owner1', 'user', ['brand1']);
-        $sorter->add('owner2', 'user', ['brand2']);
+        $sorter->add('owner1', 'user', array('brand1'));
+        $sorter->add('owner2', 'user', array('brand2'));
 
         $result = $sorter->sort();
 
@@ -160,32 +160,32 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
         $groups = $sorter->getGroups();
 
         $this->assertEquals(
-            [
+            array(
                 'type' => 'brand',
                 'level' => 0,
                 'position' => 0,
                 'length' => 2
-            ],
+            ),
             (array)$groups[0]
         );
 
         $this->assertEquals(
-            [
+            array(
                 'type' => 'user',
                 'level' => 1,
                 'position' => 2,
                 'length' => 2
-            ],
+            ),
             (array)$groups[1]
         );
 
         $this->assertEquals(
-            [
+            array(
                 'type' => 'car',
                 'level' => 2,
                 'position' => 4,
                 'length' => 1
-            ],
+            ),
             (array)$groups[2]
         );
 
@@ -203,11 +203,11 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
      */
     public function testImplementationsSimpleDoc(GroupedTopSortInterface $sorter)
     {
-        $sorter->add('car1', 'car', ['owner1', 'brand1']);
+        $sorter->add('car1', 'car', array('owner1', 'brand1'));
         $sorter->add('brand1', 'brand');
         $sorter->add('brand2', 'brand');
-        $sorter->add('owner1', 'user', ['brand1']);
-        $sorter->add('owner2', 'user', ['brand2']);
+        $sorter->add('owner1', 'user', array('brand1'));
+        $sorter->add('owner2', 'user', array('brand2'));
 
         $result = $sorter->sort();
 
@@ -222,10 +222,10 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
      */
     public function testImplementationsSimple(GroupedTopSortInterface $sorter)
     {
-        $sorter->add('car1', 'car', ['brand1']);
-        $sorter->add('owner1', 'owner', ['car1', 'brand1']);
-        $sorter->add('owner2', 'owner', ['car2', 'brand1']);
-        $sorter->add('car2', 'car', ['brand2']);
+        $sorter->add('car1', 'car', array('brand1'));
+        $sorter->add('owner1', 'owner', array('car1', 'brand1'));
+        $sorter->add('owner2', 'owner', array('car2', 'brand1'));
+        $sorter->add('car2', 'car', array('brand2'));
         $sorter->add('brand1', 'brand');
         $sorter->add('brand2', 'brand');
 
@@ -243,8 +243,8 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     public function testImplementations(GroupedTopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
-            $sorter->add('car' . $i, 'car', ['owner' . $i, 'brand' . $i]);
-            $sorter->add('owner' . $i, 'owner', ['brand' . $i]);
+            $sorter->add('car' . $i, 'car', array('owner' . $i, 'brand' . $i));
+            $sorter->add('owner' . $i, 'owner', array('brand' . $i));
             $sorter->add('brand' . $i, 'brand');
         }
 
@@ -263,8 +263,8 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     {
         for ($i = 0; $i < 3; $i++) {
             $sorter->add('brand' . $i, 'brand');
-            $sorter->add('car' . $i, 'car', ['owner' . $i, 'brand' . $i]);
-            $sorter->add('owner' . $i, 'owner', ['brand' . $i]);
+            $sorter->add('car' . $i, 'car', array('owner' . $i, 'brand' . $i));
+            $sorter->add('owner' . $i, 'owner', array('brand' . $i));
         }
 
         $result = $sorter->sort();
@@ -282,8 +282,8 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     {
         for ($i = 0; $i < 3; $i++) {
             $sorter->add('brand' . $i, 'brand');
-            $sorter->add('owner' . $i, 'owner', ['brand' . $i]);
-            $sorter->add('car' . $i, 'car', ['owner' . $i, 'brand' . $i]);
+            $sorter->add('owner' . $i, 'owner', array('brand' . $i));
+            $sorter->add('car' . $i, 'car', array('owner' . $i, 'brand' . $i));
         }
 
         $result = $sorter->sort();
@@ -300,9 +300,9 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     public function testImplementations4(GroupedTopSortInterface $sorter)
     {
         for ($i = 0; $i < 3; $i++) {
-            $sorter->add('owner' . $i, 'owner', ['brand' . $i]);
+            $sorter->add('owner' . $i, 'owner', array('brand' . $i));
             $sorter->add('brand' . $i, 'brand');
-            $sorter->add('car' . $i, 'car', ['owner' . $i, 'brand' . $i]);
+            $sorter->add('car' . $i, 'car', array('owner' . $i, 'brand' . $i));
         }
 
         $result = $sorter->sort();

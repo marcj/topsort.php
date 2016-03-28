@@ -75,7 +75,7 @@ class StringSort extends ArraySort
         $this->sorted = '';
 
         foreach ($this->elements as $element) {
-            $parents = [];
+            $parents = array();
             $this->visit($element, $parents);
         }
 
