@@ -79,7 +79,7 @@ To sort PHP objects you can stored its hash instead. `$sorter->add(spl_object_ha
 
 ## Installation
 
-Use composer package: [marcj/topsort)[https://packagist.org/packages/marcj/topsort]
+Use composer package: [marcj/topsort](https://packagist.org/packages/marcj/topsort)
 ```
 {
     "require": {
@@ -92,7 +92,7 @@ Use composer package: [marcj/topsort)[https://packagist.org/packages/marcj/topso
 include 'vendor/autoload.php';
 
 $sorter = new GroupedStringSort;
-$sorter->ad(...);
+$sorter->add(...);
 
 $result = $sorter->sort();
 ```
