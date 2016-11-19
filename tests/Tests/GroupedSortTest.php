@@ -6,7 +6,6 @@ use MJS\TopSort\CircularDependencyException;
 use MJS\TopSort\ElementNotFoundException;
 use MJS\TopSort\GroupedTopSortInterface;
 use MJS\TopSort\Implementations\GroupedArraySort;
-use MJS\TopSort\Implementations\GroupedFixedArraySort;
 use MJS\TopSort\Implementations\GroupedStringSort;
 
 class GroupedSortTest extends \PHPUnit_Framework_TestCase
@@ -17,7 +16,6 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
         return array(
             array(new GroupedArraySort()),
             array(new GroupedStringSort()),
-            array(new GroupedFixedArraySort())
         );
     }
 
@@ -85,6 +83,111 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
             $this->assertEquals('car1', $e->getStart());
             $this->assertEquals('brand1', $e->getEnd());
         }
+    }
+
+    /**
+     * @dataProvider             provideImplementations
+     *
+     * @param GroupedTopSortInterface $sorter
+     */
+    public function testDependencyOnSame(GroupedTopSortInterface $sorter)
+    {
+        $sorter->add('car1', 'car', array('brand1'));
+        $sorter->add('car2', 'car', array('car3'));
+        $sorter->add('car3', 'car', array('brand2'));
+        $sorter->add('brand1', 'brand');
+        $sorter->add('brand2', 'brand');
+
+        $expectedGroups = array(
+            array(
+                'type' => 'brand',
+                'elements' => array('brand1', 'brand2')
+            ),
+            array(
+                'type' => 'car',
+                'elements' => array('car1', 'car3', 'car2')
+            )
+        );
+
+        $this->assertEquals($expectedGroups, $sorter->sortGrouped());
+        $this->assertEquals(array('brand1', 'brand2', 'car1', 'car3', 'car2'), $sorter->sort());
+    }
+
+    /**
+     * @dataProvider             provideImplementations
+     *
+     * @param GroupedTopSortInterface $sorter
+     */
+    public function testDependencyOnSameWithActivatedSameTypeGrouping(GroupedTopSortInterface $sorter)
+    {
+        $sorter->add('car1', 'car', array('brand1'));
+        $sorter->add('car2', 'car', array('car3'));
+        $sorter->add('car3', 'car', array('brand2'));
+        $sorter->add('brand1', 'brand');
+        $sorter->add('brand2', 'brand');
+
+        $sorter->setSameTypeExtraGrouping(true);
+
+        $expectedGroups = array(
+            array(
+                'type' => 'brand',
+                'elements' => array('brand1', 'brand2')
+            ),
+            array(
+                'type' => 'car',
+                'elements' => array('car1', 'car3')
+            ),
+            array(
+                'type' => 'car',
+                'elements' => array('car2')
+            )
+        );
+        $this->assertEquals($expectedGroups, $sorter->sortGrouped());
+        $this->assertEquals(array('brand1', 'brand2', 'car1', 'car3', 'car2'), $sorter->sort());
+    }
+
+    /**
+     * @dataProvider provideImplementations
+     *
+     * @param GroupedTopSortInterface $sorter
+     */
+    public function testDependencyOnSameWithActivatedSameTypeGroupingMoreComplex(GroupedTopSortInterface $sorter)
+    {
+        $sorter->add('car6', 'car');
+        $sorter->add('car1', 'car', ['brand1']);
+        $sorter->add('car2', 'car', ['car3']);
+        $sorter->add('car3', 'car', ['brand2']);
+        $sorter->add('car4', 'car', ['car2']);
+        $sorter->add('car5', 'car', ['brand2']);
+        $sorter->add('brand1', 'brand');
+        $sorter->add('brand2', 'brand');
+
+        $sorter->setSameTypeExtraGrouping(true);
+
+        $expectedGroups = array(
+            array(
+                'type' => 'car',
+                'elements' => array('car6')
+            ),
+            array(
+                'type' => 'brand',
+                'elements' => array('brand1', 'brand2')
+            ),
+            array(
+                'type' => 'car',
+                'elements' => array('car1', 'car3')
+            ),
+            array(
+                'type' => 'car',
+                'elements' => array('car2')
+            ),
+            array(
+                'type' => 'car',
+                'elements' => array('car4', 'car5')
+            )
+        );
+        $this->assertEquals($expectedGroups, $sorter->sortGrouped());
+        $this->assertEquals(array('car6', 'brand1', 'brand2', 'car1', 'car3', 'car2', 'car4', 'car5'), $sorter->sort());
     }
 
     public function testConstructor()
@@ -203,11 +306,11 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
      */
     public function testImplementationsSimpleDoc(GroupedTopSortInterface $sorter)
     {
-        $sorter->add('car1', 'car', array('owner1', 'brand1'));
+        $sorter->add('car1', 'car', ['owner1', 'brand1']);
         $sorter->add('brand1', 'brand');
         $sorter->add('brand2', 'brand');
-        $sorter->add('owner1', 'user', array('brand1'));
-        $sorter->add('owner2', 'user', array('brand2'));
+        $sorter->add('owner1', 'user', ['brand1']);
+        $sorter->add('owner2', 'user', ['brand2']);
 
         $result = $sorter->sort();
 

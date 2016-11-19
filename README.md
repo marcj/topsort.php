@@ -79,7 +79,7 @@ To sort PHP objects you can stored its hash instead. `$sorter->add(spl_object_ha
 
 ## Installation
 
-Use composer package: [marcj/topsort](https://packagist.org/packages/marcj/topsort)
+Use composer package: [marcj/topsort)[https://packagist.org/packages/marcj/topsort]
 ```
 {
     "require": {
@@ -92,7 +92,7 @@ Use composer package: [marcj/topsort](https://packagist.org/packages/marcj/topso
 include 'vendor/autoload.php';
 
 $sorter = new GroupedStringSort;
-$sorter->add(...);
+$sorter->ad(...);
 
 $result = $sorter->sort();
 ```
@@ -120,93 +120,48 @@ Small drawback: You can not store element ids containing a null byte.
 
 This is the most basic, not so efficient implementation of grouped topSort using plain php arrays.
 
-### GroupedFixedArraySort
-
-This uses \SplFixedArray of php and is therefore much more memory friendly, but is extremely inefficient,
- because it burns your CPU since it has to shifts all array in php and not in c (like normal GroupedArraySort it does
- with `array_splice`).
-  
 ### GroupedStringSort
 
-This uses a string as storage and has therefore no array operations overhead. It's extremely faster than those implementations
-above and has almost equal memory footprint like FixedArraySort.
+This uses a string as storage and has therefore no array operations overhead. It's extremely faster
+ and has better memory footprint than GroupedArraySort.
 Small drawback: You can not store element ids containing a null byte.
 
-## Benchmarks
+## Benchmarks with PHP 7.0.9
 
 Test data: 1/3 has two edges, 1/3 has one edge and 1/3 has no edges. Use the `benchmark` command in `./bin/console`
 to play with it.
 
-### 50 elements
++-----------+----------------+--------------+----------+
+| Count     | Implementation | Memory       | Duration |
++-----------+----------------+--------------+----------+
+| 50        | FixedArraySort |           0b | 0.0001s  |
+| 50        | ArraySort      |           0b | 0.0001s  |
+| 50        | StringSort     |           0b | 0.0001s  |
+| 1,000     | FixedArraySort |      53,432b | 0.0013s  |
+| 1,000     | ArraySort      |      37,720b | 0.0012s  |
+| 1,000     | StringSort     |      89,112b | 0.0013s  |
+| 10,000    | FixedArraySort |     692,464b | 0.0141s  |
+| 10,000    | ArraySort      |     529,240b | 0.0138s  |
+| 10,000    | StringSort     |   1,080,472b | 0.0154s  |
+| 100,000   | FixedArraySort |   5,800,200b | 0.1540s  |
+| 100,000   | ArraySort      |   4,199,280b | 0.1499s  |
+| 100,000   | StringSort     |  10,124,000b | 0.1645s  |
+| 1,000,000 | FixedArraySort |  49,561,888b | 1.5456s  |
+| 1,000,000 | ArraySort      |  33,559,408b | 1.5597s  |
+| 1,000,000 | StringSort     |  95,480,848b | 1.7942s  |
++-----------+----------------+--------------+----------+
 
-Implementation | Memory       | Duration
----------------|--------------|---------
-FixedArraySort |       2,344b | 0.0005s 
-ArraySort      |       6,728b | 0.0005s 
-StringSort     |       2,008b | 0.0005s 
-
-
-Implementation        | Memory       | Duration
-----------------------|--------------|---------
-GroupedFixedArraySort |       2,728b | 0.0013s 
-GroupedArraySort      |      10,912b | 0.0010s 
-GroupedStringSort     |       2,496b | 0.0010s 
-
-
-### 1.000 elements
-
-Implementation | Memory       | Duration
----------------|--------------|---------
-FixedArraySort |       8,944b | 0.0098s 
-ArraySort      |      98,208b | 0.0102s 
-StringSort     |       9,224b | 0.0095s 
-
-
-Implementation        | Memory       | Duration
-----------------------|--------------|---------
-GroupedFixedArraySort |      35,296b | 0.1467s 
-GroupedArraySort      |     132,960b | 0.0497s 
-GroupedStringSort     |      36,376b | 0.0248s 
-
-
-### 10.000 elements
-
-Implementation | Memory       | Duration
----------------|--------------|---------
-FixedArraySort |      81,712b | 0.1146s 
-ArraySort      |   1,014,000b | 0.1128s 
-StringSort     |      91,088b | 0.1144s 
-
-
-Implementation        | Memory       | Duration
-----------------------|--------------|---------
-GroupedFixedArraySort |     395,224b | 13.2805s
-GroupedArraySort      |   1,454,832b | 5.5021s 
-GroupedStringSort     |     391,704b | 0.2504s 
-
-
-### 100.000 elements
-
-`--` means took too long.
-
-Implementation | Memory       | Duration
----------------|--------------|---------
-FixedArraySort |     801,496b | 1.8707s 
-ArraySort      |   9,850,048b | 1.9147s 
-StringSort     |   1,001,176b | 1.7949s 
-
-
-Implementation        | Memory       | Duration
-----------------------|--------------|---------
-GroupedFixedArraySort | --           | --      
-GroupedArraySort      | --           | --      
-GroupedStringSort     |  -3,795,944b | 6.6949s 
-
-### 1.000.000 elements
-
-
-Implementation | Memory       | Duration
----------------|--------------|---------
-FixedArraySort |   7,995,152b | 86.6527s
-ArraySort      |  96,386,112b | 97.5971s
-StringSort     |  10,994,248b | 80.8750s
++-----------+-------------------+--------------+-----------+
+| Count     | Implementation    | Memory       | Duration  |
++-----------+-------------------+--------------+-----------+
+| 50        | GroupedArraySort  |           0b | 0.0002s   |
+| 50        | GroupedStringSort |           0b | 0.0002s   |
+| 1,000     | GroupedArraySort  |     112,280b | 0.0090s   |
+| 1,000     | GroupedStringSort |      99,440b | 0.0025s   |
+| 10,000    | GroupedArraySort  |   1,431,320b | 0.8385s   |
+| 10,000    | GroupedStringSort |   1,176,304b | 0.0267s   |
+| 100,000   | GroupedArraySort  |  12,318,072b | 132.9709s |
+| 100,000   | GroupedStringSort |  11,129,144b | 0.2788s   |
+| 1,000,000 | GroupedArraySort  |            - | too long  |
+| 1,000,000 | GroupedStringSort | 106,488,496b | 3.0879s   |
++-----------+-------------------+--------------+-----------+

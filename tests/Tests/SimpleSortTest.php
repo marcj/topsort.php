@@ -179,14 +179,15 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     public function testImplementationsSimpleDoc(TopSortInterface $sorter)
     {
         $sorter->add('car1', array('owner1', 'brand1'));
+        $sorter->add('owner3', array('brand2'));
+        $sorter->add('owner2', array('brand2'));
         $sorter->add('brand1');
         $sorter->add('brand2');
         $sorter->add('owner1', array('brand1'));
-        $sorter->add('owner2', array('brand2'));
 
         $result = $sorter->sort();
 
-        $expected = explode(', ', 'brand1, owner1, car1, brand2, owner2');
+        $expected = explode(', ', 'brand1, owner1, car1, brand2, owner3, owner2');
 
         $this->assertEquals($expected, $result);
     }

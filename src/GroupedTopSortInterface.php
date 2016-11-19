@@ -57,13 +57,50 @@ interface GroupedTopSortInterface
      *
      * where type is the type given by ->add($id, $type, $deps), level
      * is the position of the group within all groups and position
-     * is the position of the first element in the list of all elements (getList())
+     * is the position of the first element in the list of all elements (sort())
      *
      * $firstElementPosition = $sorter->getGroups()[0]->position;
+     *
+     * $element = $this->sort()[$firstElementPosition];
+     *
+     * $firstElementOfSecondGroup = $sorter->getGroups()[1]->position;
      *
      * $element = $this->sort()[$firstElementPosition];
      *
      * @return object[]
      */
     public function getGroups();
+
+
+    /**
+     * Sorts dependencies and returns the groups of types with sorted elements.
+     *
+     * [
+     *    [
+     *        type: 'car'
+     *        elements: ['element1', 'element2']
+     *    ],[
+     *        type: 'brand'
+     *        elements: ['brand1']
+     *    ]
+     * ]
+     *
+     * @return array
+     */
+    public function sortGrouped();
+
+
+    /**
+     * When active the sorter creates a new group when a element has a dependency to the same type.
+     *
+     * @return boolean
+     */
+    public function isSameTypeExtraGrouping();
+
+    /**
+     * When active the sorter creates a new group when a element has a dependency to the same type.
+     *
+     * @param boolean $sameTypeExtraGrouping
+     */
+    public function setSameTypeExtraGrouping($sameTypeExtraGrouping);
 }

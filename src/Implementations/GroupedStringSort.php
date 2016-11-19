@@ -94,6 +94,13 @@ class GroupedStringSort extends GroupedArraySort
      */
     public function doSort()
     {
+        if ($this->sorted) {
+            //reset state when already executed
+            foreach ($this->elements as $element) {
+                $element->visited = false;
+            }
+        }
+
         $this->position = 0;
         $this->sorted = '';
 

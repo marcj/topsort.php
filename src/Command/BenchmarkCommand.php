@@ -24,56 +24,59 @@ class BenchmarkCommand extends Command
     {
         $this
             ->setName('benchmark')
-            ->addArgument('count', InputArgument::OPTIONAL, 'Count', 1000)
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->testSimpleCount($input->getArgument('count'), $output);
-        $this->testGroupCount($input->getArgument('count'), $output);
+        $this->testSimpleCount($output);
+        $this->testGroupCount($output);
     }
 
-    protected function testGroupCount($count, $output)
+    protected function testGroupCount($output)
     {
-        $this->test($count, ['GroupedFixedArraySort', 'GroupedArraySort', 'GroupedStringSort'], $output);
+        $this->test(['GroupedArraySort', 'GroupedStringSort'], $output);
     }
 
-    protected function testSimpleCount($count, $output)
+    protected function testSimpleCount($output)
     {
-        $this->test($count, ['FixedArraySort', 'ArraySort', 'StringSort'], $output);
+        $this->test(['FixedArraySort', 'ArraySort', 'StringSort'], $output);
     }
 
-    protected function test($count, $classes, OutputInterface $output)
+    protected function test($classes, OutputInterface $output)
     {
         $this->table = new Table($output);
-        $this->table->setHeaders(array('Implementation', 'Memory', 'Duration'));
-        $output->writeln(sprintf('<info>%d elements</info>', $count));
+        $this->table->setHeaders(array('Count', 'Implementation', 'Memory', 'Duration'));
 
-        $this->process = new ProgressBar($output, count($classes));
+        $counts = array(50, 1000, 10000, 100000, 1000000);
+
+        $this->process = new ProgressBar($output, count($counts));
         $this->process->start();
-        foreach ($classes as $class) {
-            $shortClass = $class;
-//            if (in_array($class, $blacklist)) {
-//                $this->table->addRow([$class, '--', '--']);
-//                continue;
-//            };
+        foreach ($counts as $count) {
 
-            $path = __DIR__ . '/../../bin/test.php';
+            foreach ($classes as $class) {
+                if ($count === 1000000 && $class === 'GroupedArraySort') {
+                    continue;
+                }
 
-            $result = `php $path $class $count`;
-            $data = json_decode($result, true);
-            if (!$data) {
-                echo $result;
+                $path = __DIR__ . '/../../bin/test.php';
+
+                $result = `php $path $class $count`;
+                $data = json_decode($result, true);
+                if (!$data) {
+                    echo $result;
+                }
+
+                $this->table->addRow(
+                    array(
+                        number_format($count),
+                        $class,
+                        sprintf('%11sb', number_format($data['memory'])),
+                        sprintf('%6.4fs', $data['time'])
+                    )
+                );
+
             }
-
-            $this->table->addRow(
-                [
-                    $shortClass,
-                    sprintf('%11sb', number_format($data['memory'])),
-                    sprintf('%6.4fs', $data['time'])
-                ]
-            );
 
             $this->process->advance();
         }
