@@ -131,9 +131,8 @@ Small drawback: You can not store element ids containing a null byte.
 Test data: 1/3 has two edges, 1/3 has one edge and 1/3 has no edges. Use the `benchmark` command in `./bin/console`
 to play with it.
 
-+-----------+----------------+--------------+----------+
 | Count     | Implementation | Memory       | Duration |
-+-----------+----------------+--------------+----------+
+|-----------|----------------|--------------|----------|
 | 50        | FixedArraySort |           0b | 0.0001s  |
 | 50        | ArraySort      |           0b | 0.0001s  |
 | 50        | StringSort     |           0b | 0.0001s  |
@@ -149,11 +148,10 @@ to play with it.
 | 1,000,000 | FixedArraySort |  49,561,888b | 1.5456s  |
 | 1,000,000 | ArraySort      |  33,559,408b | 1.5597s  |
 | 1,000,000 | StringSort     |  95,480,848b | 1.7942s  |
-+-----------+----------------+--------------+----------+
 
-+-----------+-------------------+--------------+-----------+
+
 | Count     | Implementation    | Memory       | Duration  |
-+-----------+-------------------+--------------+-----------+
+|-----------|-------------------|--------------|-----------|
 | 50        | GroupedArraySort  |           0b | 0.0002s   |
 | 50        | GroupedStringSort |           0b | 0.0002s   |
 | 1,000     | GroupedArraySort  |     112,280b | 0.0090s   |
@@ -164,4 +162,3 @@ to play with it.
 | 100,000   | GroupedStringSort |  11,129,144b | 0.2788s   |
 | 1,000,000 | GroupedArraySort  |            - | too long  |
 | 1,000,000 | GroupedStringSort | 106,488,496b | 3.0879s   |
-+-----------+-------------------+--------------+-----------+
