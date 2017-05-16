@@ -69,7 +69,7 @@ $groups = $sorter->getGroups();
 //of course there may be several groups with the same type, if the dependency graphs makes this necessary.
 
 foreach ($groups as $group) {
-   $firstItem = $result[$groups->position];
+   $firstItem = $result[$group->position];
    $allItemsOfThisGroup = array_slice($result, $group->position, $group->length);
 }
 ```
