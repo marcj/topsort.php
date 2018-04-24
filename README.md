@@ -92,7 +92,7 @@ Use composer package: [marcj/topsort)[https://packagist.org/packages/marcj/topso
 include 'vendor/autoload.php';
 
 $sorter = new GroupedStringSort;
-$sorter->ad(...);
+$sorter->add(...);
 
 $result = $sorter->sort();
 ```
