@@ -13,7 +13,7 @@ class CircularDependencyException extends \Exception
      * @param \Exception $previous
      * @param string[]   $nodes
      */
-    public function __construct($message = '', $code = 0, \Exception $previous = null, $nodes)
+    public function __construct($message, $code, ?\Exception $previous, $nodes)
     {
         parent::__construct($message, $code, $previous);
         array_pop($nodes);
