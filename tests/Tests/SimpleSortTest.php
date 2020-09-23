@@ -8,8 +8,17 @@ use MJS\TopSort\Implementations\ArraySort;
 use MJS\TopSort\Implementations\FixedArraySort;
 use MJS\TopSort\Implementations\StringSort;
 use MJS\TopSort\TopSortInterface;
+use PHPUnit\Framework\TestCase;
 
-class SimpleSortTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers MJS\TopSort\Implementations\ArraySort
+ * @covers MJS\TopSort\Implementations\FixedArraySort
+ * @covers MJS\TopSort\Implementations\StringSort
+ * @covers MJS\TopSort\Implementations\BaseImplementation
+ * @covers MJS\TopSort\CircularDependencyException
+ * @covers MJS\TopSort\ElementNotFoundException
+ */
+class SimpleSortTest extends TestCase
 {
 
     public function provideImplementations()
@@ -22,21 +31,21 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
-     * @expectedException        \MJS\TopSort\CircularDependencyException
-     * @expectedExceptionMessage Circular dependency found: car1->owner1->car1
+     * @dataProvider provideImplementations
      *
      * @param TopSortInterface $sorter
      */
     public function testCircular(TopSortInterface $sorter)
     {
+        $this->expectException(CircularDependencyException::class);
+        $this->expectExceptionMessage('Circular dependency found: car1->owner1->car1');
         $sorter->add('car1', array('owner1'));
         $sorter->add('owner1', array('car1'));
         $sorter->sort();
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param TopSortInterface $sorter
      */
@@ -51,14 +60,15 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
-     * @expectedException        \MJS\TopSort\ElementNotFoundException
-     * @expectedExceptionMessage Dependency `car2` not found, required by `owner1`
+     * @dataProvider provideImplementations
      *
      * @param TopSortInterface $sorter
      */
     public function testNotFound(TopSortInterface $sorter)
     {
+        $this->expectException(ElementNotFoundException::class);
+        $this->expectExceptionMessage('Dependency `car2` not found, required by `owner1`');
+
         $sorter->setThrowCircularDependency(true);
         $sorter->add('car1', array('owner1'));
         $sorter->add('owner1', array('car2'));
@@ -66,7 +76,7 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param TopSortInterface $sorter
      */
@@ -88,7 +98,7 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param TopSortInterface $sorter
      */
@@ -116,7 +126,7 @@ class SimpleSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param TopSortInterface $sorter
      */

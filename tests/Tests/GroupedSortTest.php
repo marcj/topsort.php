@@ -7,8 +7,16 @@ use MJS\TopSort\ElementNotFoundException;
 use MJS\TopSort\GroupedTopSortInterface;
 use MJS\TopSort\Implementations\GroupedArraySort;
 use MJS\TopSort\Implementations\GroupedStringSort;
+use PHPUnit\Framework\TestCase;
 
-class GroupedSortTest extends \PHPUnit_Framework_TestCase
+/**
+ * @covers MJS\TopSort\Implementations\GroupedArraySort
+ * @covers MJS\TopSort\Implementations\GroupedStringSort
+ * @covers MJS\TopSort\Implementations\BaseImplementation
+ * @covers MJS\TopSort\CircularDependencyException
+ * @covers MJS\TopSort\ElementNotFoundException
+ */
+class GroupedSortTest extends TestCase
 {
 
     public function provideImplementations()
@@ -20,21 +28,22 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
-     * @expectedException        \MJS\TopSort\CircularDependencyException
-     * @expectedExceptionMessage Circular dependency found: car1->owner1->car1
+     * @dataProvider provideImplementations
      *
      * @param GroupedTopSortInterface $sorter
      */
     public function testCircular(GroupedTopSortInterface $sorter)
     {
+        $this->expectException(CircularDependencyException::class);
+        $this->expectExceptionMessage('Circular dependency found: car1->owner1->car1');
+
         $sorter->add('car1', 'bar', array('owner1'));
         $sorter->add('owner1', 'owner', array('car1'));
         $sorter->sort();
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param GroupedTopSortInterface $sorter
      */
@@ -49,14 +58,15 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
-     * @expectedException        \MJS\TopSort\ElementNotFoundException
-     * @expectedExceptionMessage Dependency `car2` not found, required by `owner1`
+     * @dataProvider provideImplementations
      *
      * @param GroupedTopSortInterface $sorter
      */
     public function testNotFound(GroupedTopSortInterface $sorter)
     {
+        $this->expectException(ElementNotFoundException::class);
+        $this->expectExceptionMessage('Dependency `car2` not found, required by `owner1`');
+
         $sorter->setThrowCircularDependency(true);
         $sorter->add('car1', 'car', array('owner1'));
         $sorter->add('owner1', 'owner', array('car2'));
@@ -64,7 +74,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param GroupedTopSortInterface $sorter
      */
@@ -86,7 +96,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param GroupedTopSortInterface $sorter
      */
@@ -114,7 +124,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param GroupedTopSortInterface $sorter
      */
@@ -204,7 +214,7 @@ class GroupedSortTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @dataProvider             provideImplementations
+     * @dataProvider provideImplementations
      *
      * @param GroupedTopSortInterface $sorter
      */
