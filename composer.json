@@ -27,5 +27,10 @@
       "MJS\\TopSort\\": "src/",
       "MJS\\TopSort\\Tests\\": "tests/Tests/"
     }
+  },
+  "extra": {
+    "branch-alias": {
+        "dev-master": "2.x-dev"
+    }
   }
 }
